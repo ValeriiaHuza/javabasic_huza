@@ -1,19 +1,19 @@
 package org.example;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 public class MathHelper {
 
-    public void run(){
+    public void run() {
         Connection connection = null;
 
         try {
             connection = DatabaseConnector.getConnection();
-            if (connection!= null) {
+            if (connection != null) {
                 System.out.println("--Підключення до бази даних успішне--");
-            }
-            else {
+            } else {
                 System.out.println("--Помилка підключення--");
             }
         } catch (SQLException e) {
@@ -27,7 +27,7 @@ public class MathHelper {
         //main program body
         Scanner scanner = new Scanner(System.in);
 
-        while (true){
+        while (true) {
 
             System.out.println("Введіть номер дії, яку ви хочете виконати: ");
             System.out.println("1 - Ввести рівняння, перевірити його коректність та запропонувати його можливий корінь.");
@@ -40,7 +40,7 @@ public class MathHelper {
             String input = scanner.nextLine();
 
             switch (input) {
-                case "1" -> actionWithEquation(scanner,connection);
+                case "1" -> actionWithEquation(scanner, connection);
                 case "2" -> {
                     System.out.println("Пошук рівнянь, що мають зазначений корінь:");
                     System.out.println("Введіть корінь");
@@ -70,7 +70,7 @@ public class MathHelper {
                 case "0" -> {
                     return;
                 }
-                default -> System.out.println("Введена дія некоректна");
+                default -> System.out.println("--Введена дія некоректна--");
             }
         }
     }
@@ -101,24 +101,19 @@ public class MathHelper {
                 System.out.println("Хочете перевірити ще один корінь? Якщо так - натисніть 1, якщо ні - будь-який інший знак.");
 
                 String finish = scanner.nextLine();
-                if (!finish.equals("1")){
+                if (!finish.equals("1")) {
                     break;
-                }
-                else {
+                } else {
                     System.out.println("Введіть корінь рівняння і перевірте чи правильний він");
                 }
             }
-        }
-        else {
+        } else {
             System.out.println("--Введене рівняння некоректне, перевіртне його!--");
         }
     }
 
 
-
-
-
-    private boolean checkEquation( ArrayList<String> tokens) {
+    private boolean checkEquation(ArrayList<String> tokens) {
         return tokens.size() != 0 && tokens.contains("=") && tokens.contains("x");
     }
 
@@ -136,106 +131,102 @@ public class MathHelper {
 
         StringBuilder number = new StringBuilder();
 
-        for (int i = 0; i< input.length(); i++) {
-            char ch = input.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            char character = input.charAt(i);
 
             //check if last symbol not digit or not )
-            if (i==input.length()-1 ){
-                if (ch!=')' && !Character.isDigit(ch)) {
+            if (i == input.length() - 1) {
+                if (character != ')' && !Character.isDigit(character)) {
                     return new ArrayList<>();
                 }
             }
 
-            //if ch is digit write it to number and go to check next
-            if (Character.isDigit(ch)) {
-                number.append(ch);
+            //if character is digit write it to number and go to check next
+            if (Character.isDigit(character)) {
+                number.append(character);
             }
             //if ch==x then just add it to tokens list
-            else if (ch=='x'){
-                res.add(ch + "");
+            else if (character == 'x') {
+                res.add(character + "");
             }
             //check if ch=. then it should be part of number
-            else if (ch == '.' && i < input.length() - 1 && Character.isDigit(input.charAt(i + 1)) && number.length()>0) {
-                number.append(ch);
+            else if (character == '.' && i < input.length() - 1 && Character.isDigit(input.charAt(i + 1)) && number.length() > 0) {
+                number.append(character);
             }
-            //check if ch is symbol of operation
-            else if (ch == '+' || ch == '/' || ch == '*' || ch == '=') {
+            //check if character is symbol of operation
+            else if (character == '+' || character == '/' || character == '*' || character == '=') {
                 //add number to tokens list
                 if (number.length() > 0) {
                     res.add(number.toString());
                     number = new StringBuilder();
                 }
                 //if 2 symbols of operation is together than this equation is incorrect
-                if(i>0 && (symbols.contains(input.charAt(i - 1)) || input.charAt(i-1)=='-')){
+                if (i > 0 && (symbols.contains(input.charAt(i - 1)) || input.charAt(i - 1) == '-')) {
                     return new ArrayList<>();
                 }
-                res.add(String.valueOf(ch));
+                res.add(String.valueOf(character));
             }
             //check if ch== -
-            else if (ch == '-') {
+            else if (character == '-') {
 
                 //check - at the beginning
-                if (i==0){
-                    if(input.length()>1 && Character.isDigit(input.charAt(1))) {
-                        number.append(ch);
-                    }
-                    else {
+                if (i == 0) {
+                    if (input.length() > 1 && Character.isDigit(input.charAt(1))) {
+                        number.append(character);
+                    } else {
                         return new ArrayList<>();
                     }
                 }
                 //check if before some symbols of operation
                 else if (i != 0 && symbols.contains(input.charAt(i - 1)) && i < input.length() - 1 && Character.isDigit(input.charAt(i + 1)) && number.toString().equals("")) {
 
-                    number.append(ch);
-                }
-                else if (i != 0 && input.charAt(i - 1) =='(' && i < input.length() - 1 && Character.isDigit(input.charAt(i + 1)) && number.toString().equals("")) {
+                    number.append(character);
+                } else if (i != 0 && input.charAt(i - 1) == '(' && i < input.length() - 1 && Character.isDigit(input.charAt(i + 1)) && number.toString().equals("")) {
 
-                    number.append(ch);
-                }
-                else  {
+                    number.append(character);
+                } else {
                     if (number.length() > 0) {
                         res.add(number.toString());
                         number = new StringBuilder();
                     }
 
-                    if (i<input.length()-1 && input.charAt(i+1)=='-'){
+                    if (i < input.length() - 1 && input.charAt(i + 1) == '-') {
                         return new ArrayList<>();
                     }
-                    res.add(ch + "");
+                    res.add(character + "");
                 }
-            } else if (ch == '(') {
+            } else if (character == '(') {
                 if (number.length() > 0) {
                     res.add(number.toString());
                     number = new StringBuilder();
                 }
 
-                balanced.push(ch);
-                res.add(ch + "");
-            } else if (ch == ')') {
+                balanced.push(character);
+                res.add(character + "");
+            } else if (character == ')') {
                 if (number.length() > 0) {
                     res.add(number.toString());
                     number = new StringBuilder();
                 }
 
-                if (balanced.isEmpty()){
+                if (balanced.isEmpty()) {
                     return new ArrayList<>();
-                }
-                else {
+                } else {
                     balanced.pop();
                 }
 
-                res.add(ch + "");
+                res.add(character + "");
 
             } else {
                 return new ArrayList<>();
             }
         }
 
-        if(!balanced.isEmpty()){
+        if (!balanced.isEmpty()) {
             return new ArrayList<>();
         }
 
-        if(number.length()>0){
+        if (number.length() > 0) {
             res.add(number.toString());
         }
 
@@ -244,58 +235,42 @@ public class MathHelper {
 
     private void checkRoot(ArrayList<String> input, String res, long equationID, Connection connection) {
 
-        //System.out.println( "Розбили вхідний рядок на токени - " + input);
+        List<String> left = input.subList(0, input.indexOf("="));
+        List<String> right = input.subList(input.indexOf("=") + 1, input.size());
 
-        List<String> left = input.subList(0,input.indexOf("="));
-        List<String> right = input.subList(input.indexOf("=")+1,input.size());
+        ArrayList<String> leftSide = transformToRPNExpression(left);
+        ArrayList<String> rightSide = transformToRPNExpression(right);
 
-        //System.out.println(left);
-        //System.out.println(right);
-        ArrayList<String> leftSide = makePoliz(left);
-        ArrayList<String> rightSide = makePoliz(right);
+        double leftRes = calculateWithRPN(leftSide, res);
+        double rightRes = calculateWithRPN(rightSide, res);
 
-        double leftRes = calculatePoliz(leftSide,res);
-        //System.out.println("Ліва частина - " + leftRes);
-        double rightRes = calculatePoliz(rightSide,res);
-
-        //System.out.println("Права частина - " + rightRes);
-
-        //System.out.println(leftRes-rightRes);
-        //System.out.println(Math.pow(10,-9));
-        if (Math.abs(leftRes-rightRes)<= Math.pow(10,-9)){
+        if (Math.abs(leftRes - rightRes) <= Math.pow(10, -9)) {
             System.out.println("--Корінь правильний!!--");
-            DataBaseFunction.insertToRoot(connection, equationID,res );
-        }
-        else {
+            DataBaseFunction.insertToRoot(connection, equationID, res);
+        } else {
             System.out.println("--Введений корінь неправильний!--");
         }
-
     }
 
-    private double calculatePoliz(ArrayList<String> tokens, String x) {
+    private double calculateWithRPN(ArrayList<String> tokens, String x) {
 
         Stack<String> stack = new Stack<>();
 
-        if (tokens.size()==1){
-
-            if(tokens.get(0).equals("x")){
-                tokens.set(0,x);
+        if (tokens.size() == 1) {
+            if (tokens.get(0).equals("x")) {
+                tokens.set(0, x);
             }
 
             return Double.parseDouble(tokens.get(0));
         }
 
-        for (String t : tokens ){
-
+        for (String t : tokens) {
             switch (t) {
                 case "+" -> {
                     String first = stack.pop();
                     String second = stack.pop();
 
                     double res = Double.parseDouble(first) + Double.parseDouble(second);
-
-                   // System.out.println(first + " + " + second);
-                   // System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "-" -> {
@@ -303,9 +278,6 @@ public class MathHelper {
                     String second = stack.pop();
 
                     double res = -Double.parseDouble(first) + Double.parseDouble(second);
-
-                   // System.out.println(second + " - " + first);
-                   // System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "/" -> {
@@ -313,9 +285,6 @@ public class MathHelper {
                     String second = stack.pop();
 
                     double res = Double.parseDouble(second) / Double.parseDouble(first);
-
-                   // System.out.println(second + " / " + first);
-                   // System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "*" -> {
@@ -323,9 +292,6 @@ public class MathHelper {
                     String second = stack.pop();
 
                     double res = Double.parseDouble(first) * Double.parseDouble(second);
-
-                    //System.out.println(first + " * " + second);
-                    //System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "x" -> stack.push(x);
@@ -336,74 +302,53 @@ public class MathHelper {
         return Double.parseDouble(stack.pop());
     }
 
-    private ArrayList<String> makePoliz(List<String> input) {
-        ArrayList<String> st = new ArrayList<>();
+    //make poliz
+    private ArrayList<String> transformToRPNExpression(List<String> input) {
+        ArrayList<String> resultList = new ArrayList<>();
         Stack<String> stack = new Stack<>();
 
-        ArrayList<String> symbols = new ArrayList<>(Arrays.asList("+", "*", "/","-"));
+        ArrayList<String> mathOperations = new ArrayList<>(Arrays.asList("+", "*", "/", "-"));
 
-        for (String t : input){
+        for (String token : input) {
 
-            if (t.equals("(")){
-                stack.push(t);
-                // System.out.println(t);
-                // System.out.println("Рядок - " + st);
-                // System.out.println("Стек - " + stack);
-            }
-            else if (t.equals(")")){
-                System.out.println(t);
+            if (token.equals("(")) {
+                stack.push(token);
+            } else if (token.equals(")")) {
+                System.out.println(token);
 
-                while (!stack.peek().equals("(")){
-                    st.add(stack.pop());
+                while (!stack.peek().equals("(")) {
+                    resultList.add(stack.pop());
                 }
                 stack.pop();
-
-                //System.out.println("Рядок - " + st);
-                //System.out.println("Стек - " + stack);
-            }
-            else if (symbols.contains(t)){
-                //System.out.println(t);
-
-                if (stack.isEmpty()){
-                    stack.push(t);
-                }
-                else if ( priority(t) > priority(stack.peek())){
-                    stack.push(t);
-                }
-                else {
-                    while (stack.size()>0 && priority(stack.peek())>=priority(t)){
-                        st.add(stack.pop());
+            } else if (mathOperations.contains(token)) {
+                if (stack.isEmpty()) {
+                    stack.push(token);
+                } else if (getPriority(token) > getPriority(stack.peek())) {
+                    stack.push(token);
+                } else {
+                    while (stack.size() > 0 && getPriority(stack.peek()) >= getPriority(token)) {
+                        resultList.add(stack.pop());
                     }
-                    stack.push(t);
+                    stack.push(token);
                 }
-                //System.out.println("Рядок - " + st);
-                //System.out.println("Стек - " + stack);
-            }
-            else {
-                //System.out.println(t);
-
-                st.add(t);
+            } else {
+                resultList.add(token);
             }
 
 
         }
 
-        //System.out.println("Рядок - " + st);
-        //System.out.println("Стек - " + stack);
-
-        while (stack.size()>0){
-            st.add(stack.pop());
+        while (stack.size() > 0) {
+            resultList.add(stack.pop());
         }
 
-        //System.out.println("Поліз - " + st);
-        return st;
+        return resultList;
     }
 
-    private int priority(String op){
-        if(op.equals("-") || op.equals("+")){
+    private int getPriority(String op) {
+        if (op.equals("-") || op.equals("+")) {
             return 1;
-        }
-        else if(op.equals("*") || op.equals("/")){
+        } else if (op.equals("*") || op.equals("/")) {
             return 2;
         }
 
