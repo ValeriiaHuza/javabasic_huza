@@ -1,6 +1,7 @@
 package org.example;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DataBaseFunction {
 
@@ -25,7 +26,7 @@ public class DataBaseFunction {
         }
     }
 
-    public static void findEquationByListRoot(String res, Connection connection) {
+    public static ArrayList<String> findEquationByListRoot(String res, Connection connection) {
         String[] splitArray = res.split(" ");
         StringBuilder array = new StringBuilder("(");
 
@@ -38,11 +39,11 @@ public class DataBaseFunction {
                     array.append("?, ");
                 }
             } catch (Exception e) {
-                return;
+                return new ArrayList<>();
             }
         }
-        System.out.println(array);
 
+        ArrayList<String> resultList = new ArrayList<>();
         try {
 
             String findEquation = "SELECT DISTINCT body " +
@@ -57,23 +58,20 @@ public class DataBaseFunction {
             }
             ResultSet result = preparedStatement.executeQuery();
 
-            int count = 0;
             while (result.next()) {
                 String equation = result.getString("body");
-                System.out.println("Рівняння - " + equation);
-                count++;
-            }
-            if (count == 0) {
-                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
-                System.out.println();
+                resultList.add(equation);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return resultList;
     }
 
-    public static void findEquationWithoutRoot(Connection connection) {
+    public static ArrayList<String> findEquationWithoutRoot(Connection connection) {
+        ArrayList<String> resultList = new ArrayList<>();
         try {
             String findEquation = "SELECT body " +
                     "FROM equation " +
@@ -83,24 +81,20 @@ public class DataBaseFunction {
             PreparedStatement preparedStatement = connection.prepareStatement(findEquation);
             ResultSet result = preparedStatement.executeQuery();
 
-            int count = 0;
             while (result.next()) {
                 String equation = result.getString("body");
-                System.out.println("Рівняння - " + equation);
-                count++;
-            }
-            if (count == 0) {
-                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
-                System.out.println();
+                resultList.add(equation);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return resultList;
     }
 
-    public static void findEquationWithOneRoot(Connection connection) {
-
+    public static ArrayList<String> findEquationWithOneRoot(Connection connection) {
+        ArrayList<String> resultList = new ArrayList<>();
         try {
 
             String findEquation = "SELECT body " +
@@ -112,23 +106,20 @@ public class DataBaseFunction {
             PreparedStatement preparedStatement = connection.prepareStatement(findEquation);
             ResultSet result = preparedStatement.executeQuery();
 
-            int count = 0;
             while (result.next()) {
                 String equation = result.getString("body");
-                System.out.println("Рівняння - " + equation);
-                count++;
+                resultList.add(equation);
             }
 
-            if (count == 0) {
-                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
-                System.out.println();
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return resultList;
     }
 
-    public static void findEquationByRoot(String res, Connection connection) {
+    public static ArrayList<String> findEquationByRoot(String res, Connection connection) {
+        ArrayList<String> resultList = new ArrayList<>();
         try {
             String findEquation = "SELECT body " +
                     "FROM equation " +
@@ -139,20 +130,31 @@ public class DataBaseFunction {
             preparedStatement.setString(1, res);
 
             ResultSet result = preparedStatement.executeQuery();
-            int count = 0;
+
             while (result.next()) {
                 String equation = result.getString("body");
-                System.out.println("Рівняння - " + equation);
-                count++;
+                resultList.add(equation);
             }
-            if (count == 0) {
-                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
-                System.out.println();
-            }
-
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        return resultList;
+    }
+
+
+    public static boolean ifEquationExists(Connection connection, String input) {
+
+        try {
+            String checkIfExists = "SELECT id FROM equation WHERE body = ?";
+            PreparedStatement check = connection.prepareStatement(checkIfExists);
+            check.setString(1, input);
+            ResultSet result = check.executeQuery();
+
+            return result.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -160,17 +162,13 @@ public class DataBaseFunction {
     public static long insertToEquation(Connection connection, String input) {
 
         try {
-
             String checkIfExists = "SELECT id FROM equation WHERE body = ?";
+            PreparedStatement check = connection.prepareStatement(checkIfExists);
+            check.setString(1, input);
+            ResultSet result = check.executeQuery();
 
             String insert = "INSERT INTO equation (body) VALUES (?) RETURNING id";
-
-            PreparedStatement check = connection.prepareStatement(checkIfExists);
             PreparedStatement insertToDB = connection.prepareStatement(insert);
-
-            check.setString(1, input);
-
-            ResultSet result = check.executeQuery();
 
             if (result.next()) {
                 System.out.println("--Таке рівняння вже є в базі даних.--");
@@ -197,26 +195,34 @@ public class DataBaseFunction {
         return -1;
     }
 
+    public static boolean ifRootExists(Connection connection, long equationID, String input) {
+
+        try {
+
+            String checkIfExists = "SELECT id FROM root WHERE id_equation = ? AND root_t = ?";
+            PreparedStatement check = connection.prepareStatement(checkIfExists);
+
+            check.setLong(1, equationID);
+            check.setString(2, input);
+            ResultSet result = check.executeQuery();
+
+            return result.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public static void insertToRoot(Connection connection, long equationID, String res) {
 
         try {
 
-            String checkIfExists = "SELECT COUNT(*) FROM root WHERE id_equation = ? AND root_t = ?";
-
             String insert = "INSERT INTO root (id_equation, root_t) VALUES (?,?)";
-
-            PreparedStatement check = connection.prepareStatement(checkIfExists);
             PreparedStatement insertToDB = connection.prepareStatement(insert);
 
-            check.setLong(1, equationID);
-            check.setString(2, res);
+            boolean exists = ifRootExists(connection, equationID, res);
 
-            ResultSet result = check.executeQuery();
-            result.next();
-
-            int rowCount = result.getInt(1);
-
-            if (rowCount == 0) {
+            if (!exists) {
                 insertToDB.setLong(1, equationID);
                 insertToDB.setString(2, res);
 

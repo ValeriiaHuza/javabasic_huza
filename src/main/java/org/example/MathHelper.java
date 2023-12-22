@@ -40,44 +40,70 @@ public class MathHelper {
             String input = scanner.nextLine();
 
             switch (input) {
-                case "1" : {
+                case "1": {
                     actionWithEquation(scanner, connection);
                     break;
                 }
-                case "2"  : {
+                case "2": {
                     System.out.println("Пошук рівнянь, що мають зазначений корінь:");
                     System.out.println("Введіть корінь");
                     if (scanner.hasNext()) {
-                        String res = scanner.nextLine();
+                        String inputRoot = scanner.nextLine();
+                        ArrayList<String> result = DataBaseFunction.findEquationByRoot(inputRoot, connection);
 
-                        DataBaseFunction.findEquationByRoot(res, connection);
+                        if (result.size() == 0) {
+                            System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                            System.out.println();
+                        } else {
+                            System.out.println("Рівняння - " + result);
+                        }
                     }
                     break;
                 }
-                case "3" :{
+                case "3": {
                     System.out.println("Пошук рівнянь, що мають один із зазначених коренів:");
                     System.out.println("Введіть корені через ПРОБІЛ");
                     if (scanner.hasNext()) {
-                        String res = scanner.nextLine();
+                        String inputRoot = scanner.nextLine();
+                        ArrayList<String> result = DataBaseFunction.findEquationByListRoot(inputRoot, connection);
 
-                        DataBaseFunction.findEquationByListRoot(res, connection);
+                        if (result.size() == 0) {
+                            System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                            System.out.println();
+                        } else {
+                            System.out.println("Рівняння - " + result);
+                        }
                     }
                     break;
                 }
-                case "4" : {
+                case "4": {
                     System.out.println("Пошук рівнянь, що мають рівно один корінь:");
-                    DataBaseFunction.findEquationWithOneRoot(connection);
+                    ArrayList<String> res = DataBaseFunction.findEquationWithOneRoot(connection);
+
+                    if (res.size() == 0) {
+                        System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                        System.out.println();
+                    } else {
+                        System.out.println("Рівняння - " + res);
+                    }
                     break;
                 }
-                case "5" : {
+                case "5": {
                     System.out.println("Пошук рівнянь, що не мають збережених коренів:");
-                    DataBaseFunction.findEquationWithoutRoot(connection);
+                    ArrayList<String> res = DataBaseFunction.findEquationWithoutRoot(connection);
+
+                    if (res.size() == 0) {
+                        System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                        System.out.println();
+                    } else {
+                        System.out.println("Рівняння - " + res);
+                    }
                     break;
                 }
                 case "0": {
                     return;
                 }
-                default : {
+                default: {
                     System.out.println("--Введена дія некоректна--");
                     break;
                 }
@@ -105,7 +131,7 @@ public class MathHelper {
 
                 boolean correctRoot = checkRoot(equation, res);
 
-                if(correctRoot) {
+                if (correctRoot) {
                     DataBaseFunction.insertToRoot(connection, equationID, res);
                 }
 
@@ -284,7 +310,7 @@ public class MathHelper {
 
         for (String t : tokens) {
             switch (t) {
-                case "+" : {
+                case "+": {
                     String first = stack.pop();
                     String second = stack.pop();
 
@@ -292,7 +318,7 @@ public class MathHelper {
                     stack.push("" + res);
                     break;
                 }
-                case "-" : {
+                case "-": {
                     String first = stack.pop();
                     String second = stack.pop();
 
@@ -300,7 +326,7 @@ public class MathHelper {
                     stack.push("" + res);
                     break;
                 }
-                case "/" : {
+                case "/": {
                     String first = stack.pop();
                     String second = stack.pop();
 
@@ -308,7 +334,7 @@ public class MathHelper {
                     stack.push("" + res);
                     break;
                 }
-                case "*" : {
+                case "*": {
                     String first = stack.pop();
                     String second = stack.pop();
 
@@ -316,13 +342,13 @@ public class MathHelper {
                     stack.push("" + res);
                     break;
                 }
-                case "x" : {
+                case "x": {
                     stack.push(x);
                     break;
                 }
-                default : {
+                default: {
                     stack.push(t);
-                break;
+                    break;
                 }
             }
         }
