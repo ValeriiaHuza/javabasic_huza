@@ -40,8 +40,11 @@ public class MathHelper {
             String input = scanner.nextLine();
 
             switch (input) {
-                case "1" -> actionWithEquation(scanner, connection);
-                case "2" -> {
+                case "1" : {
+                    actionWithEquation(scanner, connection);
+                    break;
+                }
+                case "2"  : {
                     System.out.println("Пошук рівнянь, що мають зазначений корінь:");
                     System.out.println("Введіть корінь");
                     if (scanner.hasNext()) {
@@ -49,8 +52,9 @@ public class MathHelper {
 
                         DataBaseFunction.findEquationByRoot(res, connection);
                     }
+                    break;
                 }
-                case "3" -> {
+                case "3" :{
                     System.out.println("Пошук рівнянь, що мають один із зазначених коренів:");
                     System.out.println("Введіть корені через ПРОБІЛ");
                     if (scanner.hasNext()) {
@@ -58,19 +62,25 @@ public class MathHelper {
 
                         DataBaseFunction.findEquationByListRoot(res, connection);
                     }
+                    break;
                 }
-                case "4" -> {
+                case "4" : {
                     System.out.println("Пошук рівнянь, що мають рівно один корінь:");
                     DataBaseFunction.findEquationWithOneRoot(connection);
+                    break;
                 }
-                case "5" -> {
+                case "5" : {
                     System.out.println("Пошук рівнянь, що не мають збережених коренів:");
                     DataBaseFunction.findEquationWithoutRoot(connection);
+                    break;
                 }
-                case "0" -> {
+                case "0": {
                     return;
                 }
-                default -> System.out.println("--Введена дія некоректна--");
+                default : {
+                    System.out.println("--Введена дія некоректна--");
+                    break;
+                }
             }
         }
     }
@@ -79,11 +89,8 @@ public class MathHelper {
         System.out.println("Введіть ваше рівняння: ");
         String equation = scanner.nextLine();
 
-        //розбити рівняння на складові
-        ArrayList<String> allTokens = createToken(equation);
-
         //перевірити коректність рівняння
-        boolean correct = checkEquation(allTokens);
+        boolean correct = checkEquation(equation);
 
         long equationID;
         if (correct) {
@@ -96,7 +103,11 @@ public class MathHelper {
             while (scanner.hasNext()) {
                 String res = scanner.nextLine();
 
-                checkRoot(allTokens, res, equationID, connection);
+                boolean correctRoot = checkRoot(equation, res);
+
+                if(correctRoot) {
+                    DataBaseFunction.insertToRoot(connection, equationID, res);
+                }
 
                 System.out.println("Хочете перевірити ще один корінь? Якщо так - натисніть 1, якщо ні - будь-який інший знак.");
 
@@ -113,7 +124,11 @@ public class MathHelper {
     }
 
 
-    private boolean checkEquation(ArrayList<String> tokens) {
+    public boolean checkEquation(String equation) {
+
+        //розбити рівняння на складові
+        ArrayList<String> tokens = createToken(equation);
+
         return tokens.size() != 0 && tokens.contains("=") && tokens.contains("x");
     }
 
@@ -233,7 +248,9 @@ public class MathHelper {
         return res;
     }
 
-    private void checkRoot(ArrayList<String> input, String res, long equationID, Connection connection) {
+    public boolean checkRoot(String equation, String res) {
+
+        ArrayList<String> input = createToken(equation);
 
         List<String> left = input.subList(0, input.indexOf("="));
         List<String> right = input.subList(input.indexOf("=") + 1, input.size());
@@ -246,10 +263,11 @@ public class MathHelper {
 
         if (Math.abs(leftRes - rightRes) <= Math.pow(10, -9)) {
             System.out.println("--Корінь правильний!!--");
-            DataBaseFunction.insertToRoot(connection, equationID, res);
-        } else {
-            System.out.println("--Введений корінь неправильний!--");
+            return true;
         }
+
+        System.out.println("--Введений корінь неправильний!--");
+        return false;
     }
 
     private double calculateWithRPN(ArrayList<String> tokens, String x) {
@@ -266,36 +284,46 @@ public class MathHelper {
 
         for (String t : tokens) {
             switch (t) {
-                case "+" -> {
+                case "+" : {
                     String first = stack.pop();
                     String second = stack.pop();
 
                     double res = Double.parseDouble(first) + Double.parseDouble(second);
                     stack.push("" + res);
+                    break;
                 }
-                case "-" -> {
+                case "-" : {
                     String first = stack.pop();
                     String second = stack.pop();
 
                     double res = -Double.parseDouble(first) + Double.parseDouble(second);
                     stack.push("" + res);
+                    break;
                 }
-                case "/" -> {
+                case "/" : {
                     String first = stack.pop();
                     String second = stack.pop();
 
                     double res = Double.parseDouble(second) / Double.parseDouble(first);
                     stack.push("" + res);
+                    break;
                 }
-                case "*" -> {
+                case "*" : {
                     String first = stack.pop();
                     String second = stack.pop();
 
                     double res = Double.parseDouble(first) * Double.parseDouble(second);
                     stack.push("" + res);
+                    break;
                 }
-                case "x" -> stack.push(x);
-                default -> stack.push(t);
+                case "x" : {
+                    stack.push(x);
+                    break;
+                }
+                default : {
+                    stack.push(t);
+                break;
+                }
             }
         }
 
