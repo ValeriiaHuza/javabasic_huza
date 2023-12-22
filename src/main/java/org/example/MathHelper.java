@@ -11,10 +11,10 @@ public class MathHelper {
         try {
             connection = DatabaseConnector.getConnection();
             if (connection!= null) {
-                System.out.println("Підключення до бази даних успішне");
+                System.out.println("--Підключення до бази даних успішне--");
             }
             else {
-                System.out.println("Помилка підключення");
+                System.out.println("--Помилка підключення--");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -31,7 +31,7 @@ public class MathHelper {
 
             System.out.println("Введіть номер дії, яку ви хочете виконати: ");
             System.out.println("1 - Ввести рівняння, перевірити його коректність та запропонувати його можливий корінь.");
-            System.out.println("2 - Знайти всі рівняння, що мають заданий корінь.");
+            System.out.println("2 - Знайти всі рівняння, що мають зазначений корінь.");
             System.out.println("3 - Знайти всі рівняння, що мають один із зазначених коренів.");
             System.out.println("4 - Знайти всі рівняння, що мають рівно один корінь.");
             System.out.println("5 - Знайти всі рівняння, що не мають коренів.");
@@ -244,27 +244,30 @@ public class MathHelper {
 
     private void checkRoot(ArrayList<String> input, String res, long equationID, Connection connection) {
 
-        System.out.println( "Розбили вхідний рядок на токени - " + input);
+        //System.out.println( "Розбили вхідний рядок на токени - " + input);
 
         List<String> left = input.subList(0,input.indexOf("="));
         List<String> right = input.subList(input.indexOf("=")+1,input.size());
 
-        System.out.println(left);
-        System.out.println(right);
+        //System.out.println(left);
+        //System.out.println(right);
         ArrayList<String> leftSide = makePoliz(left);
         ArrayList<String> rightSide = makePoliz(right);
 
         double leftRes = calculatePoliz(leftSide,res);
-        System.out.println("Ліва частина - " + leftRes);
+        //System.out.println("Ліва частина - " + leftRes);
         double rightRes = calculatePoliz(rightSide,res);
 
-        System.out.println("Права частина - " + rightRes);
+        //System.out.println("Права частина - " + rightRes);
 
-        System.out.println(leftRes-rightRes);
-        System.out.println(Math.pow(10,-9));
+        //System.out.println(leftRes-rightRes);
+        //System.out.println(Math.pow(10,-9));
         if (Math.abs(leftRes-rightRes)<= Math.pow(10,-9)){
-            System.out.println("Корінь правильний!!");
+            System.out.println("--Корінь правильний!!--");
             DataBaseFunction.insertToRoot(connection, equationID,res );
+        }
+        else {
+            System.out.println("--Введений корінь неправильний!--");
         }
 
     }
@@ -274,6 +277,11 @@ public class MathHelper {
         Stack<String> stack = new Stack<>();
 
         if (tokens.size()==1){
+
+            if(tokens.get(0).equals("x")){
+                tokens.set(0,x);
+            }
+
             return Double.parseDouble(tokens.get(0));
         }
 
@@ -286,8 +294,8 @@ public class MathHelper {
 
                     double res = Double.parseDouble(first) + Double.parseDouble(second);
 
-                    System.out.println(first + " + " + second);
-                    System.out.println("Res = " + res);
+                   // System.out.println(first + " + " + second);
+                   // System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "-" -> {
@@ -296,8 +304,8 @@ public class MathHelper {
 
                     double res = -Double.parseDouble(first) + Double.parseDouble(second);
 
-                    System.out.println(second + " - " + first);
-                    System.out.println("Res = " + res);
+                   // System.out.println(second + " - " + first);
+                   // System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "/" -> {
@@ -306,8 +314,8 @@ public class MathHelper {
 
                     double res = Double.parseDouble(second) / Double.parseDouble(first);
 
-                    System.out.println(second + " / " + first);
-                    System.out.println("Res = " + res);
+                   // System.out.println(second + " / " + first);
+                   // System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "*" -> {
@@ -316,8 +324,8 @@ public class MathHelper {
 
                     double res = Double.parseDouble(first) * Double.parseDouble(second);
 
-                    System.out.println(first + " * " + second);
-                    System.out.println("Res = " + res);
+                    //System.out.println(first + " * " + second);
+                    //System.out.println("Res = " + res);
                     stack.push("" + res);
                 }
                 case "x" -> stack.push(x);
@@ -387,7 +395,7 @@ public class MathHelper {
             st.add(stack.pop());
         }
 
-        System.out.println("Поліз - " + st);
+        //System.out.println("Поліз - " + st);
         return st;
     }
 

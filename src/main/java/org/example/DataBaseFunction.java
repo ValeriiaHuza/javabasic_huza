@@ -63,9 +63,15 @@ public class DataBaseFunction {
             }
             ResultSet result = preparedStatement.executeQuery();
 
+            int count = 0;
             while ( result.next()){
                 String equation = result.getString("body");
-                System.out.println("Equation - " + equation);
+                System.out.println("Рівняння - " + equation);
+                count++;
+            }
+            if(count==0){
+                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                System.out.println();
             }
 
         } catch (SQLException e) {
@@ -86,9 +92,15 @@ public class DataBaseFunction {
 
             ResultSet result = preparedStatement.executeQuery();
 
+            int count=0;
             while ( result.next()){
                 String equation = result.getString("body");
-                System.out.println("Equation - " + equation);
+                System.out.println("Рівняння - " + equation);
+                count++;
+            }
+            if(count==0){
+                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                System.out.println();
             }
 
         } catch (SQLException e) {
@@ -110,11 +122,17 @@ public class DataBaseFunction {
 
             ResultSet result = preparedStatement.executeQuery();
 
+            int count = 0;
             while ( result.next()){
                 String equation = result.getString("body");
-                System.out.println("Equation - " + equation);
+                System.out.println("Рівняння - " + equation);
+                count++;
             }
 
+            if(count==0){
+                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                System.out.println();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,10 +153,18 @@ public class DataBaseFunction {
 
             ResultSet result = preparedStatement.executeQuery();
 
+            int count = 0;
+
             while ( result.next()){
                 String equation = result.getString("body");
-                System.out.println("Equation - " + equation);
+                System.out.println("Рівняння - " + equation);
+                count++;
             }
+            if(count==0){
+                System.out.println("Рівнянь, що відповідають параметрам у базі даних немає.");
+                System.out.println();
+            }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -162,7 +188,7 @@ public class DataBaseFunction {
             ResultSet result = check.executeQuery();
 
             if(result.next()){
-                System.out.println("Таке рівняння вже є в базі даних");
+                System.out.println("--Таке рівняння вже є в базі даних.--");
                 return result.getLong("id");
             }
             else {
@@ -173,10 +199,10 @@ public class DataBaseFunction {
                 if (insertResult.next()){
 
                     long id = insertResult.getLong("id");
-                    System.out.println("Рівняння успішно додалось!");
+                    System.out.println("--Рівняння успішно додано до бази даних!--");
                     return id;
                 } else {
-                    System.out.println("Виникла помилка");
+                    System.out.println("--Виникла помилка при додаванні рівняння в базу даних.--");
                 }
             }
 
@@ -214,14 +240,14 @@ public class DataBaseFunction {
 
                 if (affected>0){
 
-                    System.out.println("Корінь рівняння успішно додався!");
+                    System.out.println("--Корінь рівняння успішно додано до бази даних!--");
 
                 } else {
-                    System.out.println("Виникла помилка");
+                    System.out.println("--Виникла помилка при додаванні кореня до бази даних.--");
                 }
             }
             else {
-                System.out.println("Такий корінь вже є в базі даних");
+                System.out.println("--Такий корінь вже є в базі даних.--");
             }
         } catch (SQLException e) {
             e.printStackTrace();
