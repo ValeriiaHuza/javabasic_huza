@@ -17,5 +17,6 @@ Ensure you have the following installed on your machine:
 - Maven
 - PostgreSQL Database
 
-Configuration
+## Configuration
+
 To run this project, you need to change the database connection details (username, password) in the DatabaseConnection class.
