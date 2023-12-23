@@ -115,6 +115,8 @@ public class MathHelper {
         System.out.println("Введіть ваше рівняння: ");
         String equation = scanner.nextLine();
 
+        //remove all spaces
+        equation = equation.replaceAll("\\s", "");
         //перевірити коректність рівняння
         boolean correct = checkEquation(equation);
 
