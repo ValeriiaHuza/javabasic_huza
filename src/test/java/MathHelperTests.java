@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MathHelperTests {
 
@@ -16,14 +17,14 @@ public class MathHelperTests {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"-x=5","((6-x)-(6+x))-5=x","((6-x)-x)=8","2*x+5=17", "3*x=12", "x/2=3", "5=2*x-1", "2*x*x=10", "-1.3*5/x=1.2", "x+5+-x=5", "2*(x+5+x)+5=10"})
+    @ValueSource(strings = {"-x=5", "((6-x)-(6+x))-5=x", "((6-x)-x)=8", "2*x+5=17", "3*x=12", "x/2=3", "5=2*x-1", "2*x*x=10", "-1.3*5/x=1.2", "x+5+-x=5", "2*(x+5+x)+5=10"})
     public void checkTrueEquationTest(String equation) {
         boolean correct = mh.checkEquation(equation);
         assertTrue(correct, "Рівняння" + equation);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"3*(x+2*x=5)","x.+6=5","xx+x=5","x+4-)+8=7","x+(+x-6)=9","2*x+3=5*x-1=2","3x","3x+5=7" , "-3*x+(+7-8)=7","3*x++5=7", "3++x=7","3*x+(7-8=7","2*x/+(5-3)=17","5*(x-3+2=3(x-4)+2*x-1", "4*x+2*y=10","6x+3=", "3*(2*x+4))=18","2*+x+5=17","5(x-3)+2=3(x-4)+2x-1", "(3*x=12", "x/2.=3", "2*x-1", "2=1+1", "(3+5)*8*x)=6", " ", "3"})
+    @ValueSource(strings = {"3*(x+2*x=5)", "x.+6=5", "xx+x=5", "x+4-)+8=7", "x+(+x-6)=9", "2*x+3=5*x-1=2", "3x", "3x+5=7", "-3*x+(+7-8)=7", "3*x++5=7", "3++x=7", "3*x+(7-8=7", "2*x/+(5-3)=17", "5*(x-3+2=3(x-4)+2*x-1", "4*x+2*y=10", "6x+3=", "3*(2*x+4))=18", "2*+x+5=17", "5(x-3)+2=3(x-4)+2x-1", "(3*x=12", "x/2.=3", "2*x-1", "2=1+1", "(3+5)*8*x)=6", " ", "3"})
     public void checkFalseEquationTest(String equation) {
         boolean correct = mh.checkEquation(equation);
         assertFalse(correct, "Рівняння" + equation);

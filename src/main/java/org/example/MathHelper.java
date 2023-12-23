@@ -157,7 +157,7 @@ public class MathHelper {
         //розбити рівняння на складові
         ArrayList<String> tokens = createToken(equation);
 
-        return tokens.size() != 0 && tokens.contains("=") && Collections.frequency(tokens,"=")==1 && (tokens.contains("x")||tokens.contains("-x"));
+        return tokens.size() != 0 && tokens.contains("=") && Collections.frequency(tokens, "=") == 1 && (tokens.contains("x") || tokens.contains("-x"));
     }
 
 
@@ -179,7 +179,7 @@ public class MathHelper {
 
             //check if last symbol not digit,x or not )
             if (i == input.length() - 1) {
-                if (character != ')'&& character!='x' && !Character.isDigit(character)) {
+                if (character != ')' && character != 'x' && !Character.isDigit(character)) {
                     return new ArrayList<>();
                 }
             }
@@ -190,11 +190,11 @@ public class MathHelper {
             }
             //if ch==x then just add it to tokens list
             else if (character == 'x') {
-                if(i>0&&input.charAt(i-1)=='x'){
+                if (i > 0 && input.charAt(i - 1) == 'x') {
                     return new ArrayList<>();
                 }
                 number.append(character);
-               // res.add(character + "");
+                // res.add(character + "");
             }
             //check if ch=. then it should be part of number
             else if (character == '.' && i < input.length() - 1 && Character.isDigit(input.charAt(i + 1)) && number.length() > 0) {
@@ -204,18 +204,18 @@ public class MathHelper {
             //check if character is symbol of operation
             else if (character == '+' || character == '/' || character == '*' || character == '=') {
 
-                if(character=='=' && !balanced.isEmpty()){
+                if (character == '=' && !balanced.isEmpty()) {
                     return new ArrayList<>();
                 }
 
                 //add number to tokens list
                 if (number.length() > 0) {
-                   // System.out.println(number);
+                    // System.out.println(number);
                     res.add(number.toString());
                     number = new StringBuilder();
                 }
                 //if 2 symbols of operation is together than this equation is incorrect
-                if (i > 0 && (symbols.contains(input.charAt(i - 1)) || input.charAt(i - 1) == '-' ||input.charAt(i - 1) == '(')) {
+                if (i > 0 && (symbols.contains(input.charAt(i - 1)) || input.charAt(i - 1) == '-' || input.charAt(i - 1) == '(')) {
                     return new ArrayList<>();
                 }
                 //System.out.println(character);
@@ -228,10 +228,9 @@ public class MathHelper {
                 if (i == 0) {
                     if (input.length() > 1 && Character.isDigit(input.charAt(1))) {
                         number.append(character);
-                    }
-                    else if (input.length()>1 && input.charAt(1)=='x'){
+                    } else if (input.length() > 1 && input.charAt(1) == 'x') {
                         number.append(character);
-                    }else {
+                    } else {
                         return new ArrayList<>();
                     }
                 }
@@ -240,7 +239,7 @@ public class MathHelper {
                     boolean xOrDigit = Character.isDigit(input.charAt(i + 1)) || input.charAt(i + 1) == 'x';
                     if (symbols.contains(input.charAt(i - 1)) && i < input.length() - 1 && number.toString().equals("")) {
 
-                        if(xOrDigit) {
+                        if (xOrDigit) {
                             number.append(character);
                         }
                     } else if (input.charAt(i - 1) == '(' && i < input.length() - 1 && xOrDigit && number.toString().equals("")) {
@@ -248,7 +247,7 @@ public class MathHelper {
                         number.append(character);
                     } else {
                         if (number.length() > 0) {
-                           // System.out.println(number);
+                            // System.out.println(number);
                             res.add(number.toString());
                             number = new StringBuilder();
                         }
@@ -267,9 +266,9 @@ public class MathHelper {
                     number = new StringBuilder();
                 }
 
-                if (i>0){
-                    if (input.charAt(i-1)!='(') {
-                        if (!symbols.contains(input.charAt(i - 1))&&input.charAt(i-1)!='-') {
+                if (i > 0) {
+                    if (input.charAt(i - 1) != '(') {
+                        if (!symbols.contains(input.charAt(i - 1)) && input.charAt(i - 1) != '-') {
                             return new ArrayList<>();
                         }
                     }
@@ -285,8 +284,8 @@ public class MathHelper {
                     number = new StringBuilder();
                 }
 
-                if (i<input.length()-1){
-                    if(input.charAt(i+1)!=')') {
+                if (i < input.length() - 1) {
+                    if (input.charAt(i + 1) != ')') {
                         if (!symbols.contains(input.charAt(i + 1)) && input.charAt(i + 1) != '-') {
                             return new ArrayList<>();
                         }
@@ -342,16 +341,15 @@ public class MathHelper {
     }
 
     private double calculateWithRPN(ArrayList<String> tokens, String x) {
-       // System.out.println(tokens);
+        // System.out.println(tokens);
 
         Stack<String> stack = new Stack<>();
 
         if (tokens.size() == 1) {
             if (tokens.get(0).equals("x")) {
                 tokens.set(0, x);
-            }
-            else if(tokens.get(0).equals("-x")){
-                tokens.set(0,String.valueOf(-Double.parseDouble(x)));
+            } else if (tokens.get(0).equals("-x")) {
+                tokens.set(0, String.valueOf(-Double.parseDouble(x)));
             }
 
             return Double.parseDouble(tokens.get(0));
@@ -395,7 +393,7 @@ public class MathHelper {
                     stack.push(x);
                     break;
                 }
-                case "-x":{
+                case "-x": {
                     stack.push(String.valueOf(-Double.parseDouble(x)));
                     break;
                 }
@@ -421,7 +419,7 @@ public class MathHelper {
             if (token.equals("(")) {
                 stack.push(token);
             } else if (token.equals(")")) {
-               // System.out.println(token);
+                // System.out.println(token);
 
                 while (!stack.peek().equals("(")) {
                     resultList.add(stack.pop());
